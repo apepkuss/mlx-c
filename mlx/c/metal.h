@@ -32,6 +32,17 @@ int mlx_metal_is_available(bool* res);
 int mlx_metal_start_capture(const char* path);
 int mlx_metal_stop_capture(void);
 
+/**
+ * Set the maximum number of operations per Metal command buffer.
+ * Lower values improve stability for large prompts at a small throughput cost.
+ */
+int mlx_metal_set_max_ops_per_buffer(int val);
+
+/**
+ * Set the maximum MB of data per Metal command buffer.
+ */
+int mlx_metal_set_max_mb_per_buffer(int val);
+
 /**@}*/
 
 #ifdef __cplusplus
