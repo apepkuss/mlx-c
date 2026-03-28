@@ -35,3 +35,21 @@ extern "C" int mlx_metal_stop_capture(void) {
   }
   return 0;
 }
+extern "C" int mlx_metal_set_max_ops_per_buffer(int val) {
+  try {
+    mlx::core::metal::set_max_ops_per_buffer(val);
+  } catch (std::exception& e) {
+    mlx_error(e.what());
+    return 1;
+  }
+  return 0;
+}
+extern "C" int mlx_metal_set_max_mb_per_buffer(int val) {
+  try {
+    mlx::core::metal::set_max_mb_per_buffer(val);
+  } catch (std::exception& e) {
+    mlx_error(e.what());
+    return 1;
+  }
+  return 0;
+}
