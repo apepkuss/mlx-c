@@ -631,3 +631,37 @@ extern "C" int mlx_fast_scaled_dot_product_attention(
   }
   return 0;
 }
+
+extern "C" int mlx_fast_turboquant_sdpa(
+    mlx_array* res,
+    const mlx_array queries,
+    const mlx_array k_packed,
+    const mlx_array values,
+    const mlx_array k_norms,
+    const mlx_array codebook,
+    float scale,
+    int bits,
+    const char* mask_mode,
+    const mlx_array mask_arr /* may be null */,
+    const mlx_stream s) {
+  try {
+    mlx_array_set_(
+        *res,
+        mlx::core::fast::turboquant_sdpa(
+            mlx_array_get_(queries),
+            mlx_array_get_(k_packed),
+            mlx_array_get_(values),
+            mlx_array_get_(k_norms),
+            mlx_array_get_(codebook),
+            scale,
+            bits,
+            std::string(mask_mode),
+            (mask_arr.ctx ? std::make_optional(mlx_array_get_(mask_arr))
+                          : std::nullopt),
+            mlx_stream_get_(s)));
+  } catch (std::exception& e) {
+    mlx_error(e.what());
+    return 1;
+  }
+  return 0;
+}
