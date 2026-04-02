@@ -205,7 +205,9 @@ int mlx_fast_turboquant_sdpa(
     const mlx_array k_norms,
     const mlx_array codebook,
     float scale,
-    int bits,
+    int k_bits,
+    int v_bits,
+    const mlx_array v_norms /* may be null */,
     const char* mask_mode,
     const mlx_array mask_arr /* may be null */,
     const mlx_stream s);
