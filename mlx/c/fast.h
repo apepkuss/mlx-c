@@ -213,6 +213,15 @@ int mlx_fast_turboquant_sdpa(
     const mlx_array mask_arr /* may be null */,
     const mlx_stream s);
 
+int mlx_fast_turbo_quantize(
+    mlx_array* packed_out,
+    mlx_array* norms_out,
+    const mlx_array input,
+    const mlx_array signs,
+    const mlx_array codebook,
+    int bits,
+    const mlx_stream s);
+
 /**@}*/
 
 #ifdef __cplusplus

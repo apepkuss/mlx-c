@@ -672,3 +672,27 @@ extern "C" int mlx_fast_turboquant_sdpa(
   }
   return 0;
 }
+
+extern "C" int mlx_fast_turbo_quantize(
+    mlx_array* packed_out,
+    mlx_array* norms_out,
+    const mlx_array input,
+    const mlx_array signs,
+    const mlx_array codebook,
+    int bits,
+    const mlx_stream s) {
+  try {
+    auto results = mlx::core::fast::turbo_quantize(
+        mlx_array_get_(input),
+        mlx_array_get_(signs),
+        mlx_array_get_(codebook),
+        bits,
+        mlx_stream_get_(s));
+    mlx_array_set_(*packed_out, results[0]);
+    mlx_array_set_(*norms_out, results[1]);
+  } catch (std::exception& e) {
+    mlx_error(e.what());
+    return 1;
+  }
+  return 0;
+}
