@@ -411,6 +411,12 @@ int _mlx_array_is_row_contiguous(bool* res, const mlx_array arr);
  */
 int _mlx_array_is_col_contiguous(bool* res, const mlx_array arr);
 
+/**
+ * Overwrite the descriptor of `dst` with the descriptor of `src`.
+ * Enables in-place cache updates that immediately release old buffers.
+ */
+int mlx_array_overwrite_descriptor(mlx_array dst, const mlx_array src);
+
 /**@}*/
 
 #ifdef __cplusplus
