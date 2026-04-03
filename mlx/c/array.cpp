@@ -659,6 +659,15 @@ extern "C" int _mlx_array_is_col_contiguous(bool* res, const mlx_array arr) {
   }
   return 0;
 }
+extern "C" int mlx_array_detach(mlx_array arr) {
+  try {
+    mlx_array_get_(arr).detach();
+  } catch (std::exception& e) {
+    mlx_error(e.what());
+    return 1;
+  }
+  return 0;
+}
 extern "C" int mlx_array_overwrite_descriptor(mlx_array dst, const mlx_array src) {
   try {
     mlx_array_get_(dst).overwrite_descriptor(mlx_array_get_(src));
