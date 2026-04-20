@@ -35,7 +35,14 @@ else()
   FetchContent_Declare(
     mlx
     GIT_REPOSITORY "https://github.com/apepkuss/mlx.git"
-    GIT_TAG dev)
+    # Pinned to the commit that fixes the SDPA mask batch/head-stride
+    # split for broadcast masks (`[B, 1, 1, kv]`). The post-fix kernel
+    # is required by downstream ironmlx's `Attention::forward_batched_turbo`,
+    # which stopped tiling the mask on the caller side. Bump this hash
+    # when rolling to a newer MLX version — never track the `dev` branch
+    # tip here, or fresh clones and CI will silently pick up untested
+    # upstream changes.
+    GIT_TAG 2b4bc9b2c45cd45b80445977e351fe979bcc832f)
   FetchContent_MakeAvailable(mlx)
 endif()
 
