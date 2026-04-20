@@ -36,13 +36,14 @@ else()
     mlx
     GIT_REPOSITORY "https://github.com/apepkuss/mlx.git"
     # Pinned to the commit that fixes the SDPA mask batch/head-stride
-    # split for broadcast masks (`[B, 1, 1, kv]`). The post-fix kernel
-    # is required by downstream ironmlx's `Attention::forward_batched_turbo`,
-    # which stopped tiling the mask on the caller side. Bump this hash
-    # when rolling to a newer MLX version — never track the `dev` branch
-    # tip here, or fresh clones and CI will silently pick up untested
-    # upstream changes.
-    GIT_TAG 2b4bc9b2c45cd45b80445977e351fe979bcc832f)
+    # split for broadcast masks (`[B, 1, 1, kv]`) plus the 1-pass
+    # adapter buffer binding (18 vs 19) that made slot >= 1 read
+    # uninitialised `mask_batch_stride`. The post-fix kernel is
+    # required by downstream ironmlx (turbo + non-turbo batched
+    # decode). Bump this hash when rolling to a newer MLX version —
+    # never track the `dev` branch tip here, or fresh clones and CI
+    # will silently pick up untested upstream changes.
+    GIT_TAG b5c78c66b2493c925c040217dbeec91d1b487e06)
   FetchContent_MakeAvailable(mlx)
 endif()
 
