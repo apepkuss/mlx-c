@@ -107,6 +107,43 @@ extern "C" int mlx_closure_apply(
   return 0;
 }
 
+extern "C" int mlx_closure_apply_flat(
+    mlx_array* outs,
+    size_t* out_count,
+    size_t out_capacity,
+    mlx_closure cls,
+    const mlx_array* ins,
+    size_t in_count) {
+  try {
+    // Build input vector directly on the caller's stack frame — no
+    // mlx_vector_array wrapper allocation.
+    std::vector<mlx::core::array> inputs;
+    inputs.reserve(in_count);
+    for (size_t i = 0; i < in_count; ++i) {
+      inputs.push_back(mlx_array_get_(ins[i]));
+    }
+    // Invoke the compiled closure. Return value lands directly on this
+    // stack frame; NRVO typically avoids any copy.
+    auto result = mlx_closure_get_(cls)(inputs);
+    if (result.size() > out_capacity) {
+      mlx_error("mlx_closure_apply_flat: output buffer too small");
+      return 1;
+    }
+    // Move each output into the caller-provided mlx_array slots. If the
+    // caller pre-allocated ctx, we reuse it; otherwise mlx_array_set_
+    // performs a single heap allocation per output (unavoidable — each
+    // mlx_array is an independent handle).
+    for (size_t i = 0; i < result.size(); ++i) {
+      mlx_array_set_(outs[i], std::move(result[i]));
+    }
+    *out_count = result.size();
+  } catch (std::exception& e) {
+    mlx_error(e.what());
+    return 1;
+  }
+  return 0;
+}
+
 extern "C" mlx_closure mlx_closure_new_unary(
     int (*fun)(mlx_array*, const mlx_array)) {
   try {

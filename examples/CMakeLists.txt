@@ -20,3 +20,7 @@ target_link_libraries(example-closure PUBLIC mlxc)
 
 add_executable(example-export ${CMAKE_CURRENT_LIST_DIR}/example-export.c)
 target_link_libraries(example-export PUBLIC mlxc)
+
+add_executable(bench-closure-apply-flat
+               ${CMAKE_CURRENT_LIST_DIR}/bench-closure-apply-flat.c)
+target_link_libraries(bench-closure-apply-flat PUBLIC mlxc)
