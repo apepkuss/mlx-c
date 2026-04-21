@@ -26,3 +26,7 @@ target_link_libraries(example-gguf PUBLIC mlxc)
 
 add_executable(example-graph ${CMAKE_CURRENT_LIST_DIR}/example-graph.c)
 target_link_libraries(example-graph PUBLIC mlxc)
+
+add_executable(bench-closure-apply-flat
+               ${CMAKE_CURRENT_LIST_DIR}/bench-closure-apply-flat.c)
+target_link_libraries(bench-closure-apply-flat PUBLIC mlxc)

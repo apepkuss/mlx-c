@@ -39,6 +39,41 @@ int mlx_closure_apply(
     mlx_closure cls,
     const mlx_vector_array input);
 
+/**
+ * Zero-heap-allocation variant of `mlx_closure_apply` for hot-path callers
+ * (e.g. per-layer compiled graph invocations inside a decode loop).
+ *
+ * Unlike `mlx_closure_apply`, this entry point never allocates the
+ * `mlx_vector_array` wrapper struct on the heap. Inputs and outputs flow
+ * through caller-provided flat `mlx_array` arrays. The caller is
+ * responsible for:
+ *   - passing `in_count` valid `mlx_array` handles in `ins`
+ *   - pre-allocating `outs` with at least `out_capacity` freshly-created
+ *     `mlx_array` handles (via `mlx_array_new()` — ctx may be NULL)
+ *
+ * On success:
+ *   - `*out_count` is set to the number of outputs produced by the closure
+ *   - `outs[0..*out_count]` are populated with the result arrays
+ *   - `outs[*out_count..out_capacity]` are left untouched
+ *
+ * Returns non-zero if the output buffer is too small or the closure
+ * itself reports an error.
+ *
+ * Motivation: `mlx_closure_apply` constructs/destructs two
+ * `mlx_vector_array` heap objects per call, which shows up as a
+ * measurable per-layer overhead in tight decode loops driven from
+ * non-C++ language bindings (e.g. Rust, Swift). The upstream C++ API
+ * and pybind bindings avoid this entirely by passing `std::vector`
+ * by value/reference, which RVO/NRVO place on the caller's stack.
+ */
+int mlx_closure_apply_flat(
+    mlx_array* outs,
+    size_t* out_count,
+    size_t out_capacity,
+    mlx_closure cls,
+    const mlx_array* ins,
+    size_t in_count);
+
 mlx_closure mlx_closure_new_unary(int (*fun)(mlx_array*, const mlx_array));
 
 typedef struct mlx_closure_kwargs_ {
