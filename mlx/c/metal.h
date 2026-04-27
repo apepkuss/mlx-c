@@ -43,6 +43,18 @@ int mlx_metal_set_max_ops_per_buffer(int val);
  */
 int mlx_metal_set_max_mb_per_buffer(int val);
 
+/**
+ * Read the current maximum number of operations per Metal command buffer.
+ * Required to scale chip-specific defaults proportionally for large
+ * prompts — see `ironmlx/src/engine.rs::MetalBufferDefaults`.
+ */
+int mlx_metal_get_max_ops_per_buffer(int* res);
+
+/**
+ * Read the current maximum MB of data per Metal command buffer.
+ */
+int mlx_metal_get_max_mb_per_buffer(int* res);
+
 /**@}*/
 
 #ifdef __cplusplus
