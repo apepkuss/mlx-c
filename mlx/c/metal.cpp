@@ -53,3 +53,21 @@ extern "C" int mlx_metal_set_max_mb_per_buffer(int val) {
   }
   return 0;
 }
+extern "C" int mlx_metal_get_max_ops_per_buffer(int* res) {
+  try {
+    *res = mlx::core::metal::get_max_ops_per_buffer();
+  } catch (std::exception& e) {
+    mlx_error(e.what());
+    return 1;
+  }
+  return 0;
+}
+extern "C" int mlx_metal_get_max_mb_per_buffer(int* res) {
+  try {
+    *res = mlx::core::metal::get_max_mb_per_buffer();
+  } catch (std::exception& e) {
+    mlx_error(e.what());
+    return 1;
+  }
+  return 0;
+}
