@@ -27,6 +27,7 @@
 #include "mlx/c/random.h"
 #include "mlx/c/stream.h"
 #include "mlx/c/string.h"
+#include "mlx/c/thread_local_stream.h"
 #include "mlx/c/transforms.h"
 #include "mlx/c/transforms_impl.h"
 #include "mlx/c/vector.h"
