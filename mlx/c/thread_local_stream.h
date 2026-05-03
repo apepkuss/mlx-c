@@ -94,6 +94,27 @@ int mlx_thread_local_stream_get_index(
  */
 int mlx_thread_local_stream_free(mlx_thread_local_stream tls);
 
+/**
+ * Register every existing GPU stream's `CommandEncoder` on the
+ * **calling thread**.
+ *
+ * mlx 0.31.2 made the metal backend's `CommandEncoder` thread-local,
+ * which means a `Stream` created on thread A only has an encoder on
+ * thread A. Arrays produced on thread A (e.g. model weights loaded
+ * before the engine thread spawns) carry that stream; running them
+ * through `mlx_eval` on thread B fails with
+ * `"There is no Stream(gpu, X) in current thread."`.
+ *
+ * Calling this once at the entry of a worker thread (e.g. an
+ * engine's run loop) walks `mlx::core::get_streams()` and invokes
+ * `mlx::core::gpu::new_stream(s)` for each GPU stream — that call is
+ * idempotent (`encoders.try_emplace`), so the existing global
+ * `Stream` objects gain encoders on the worker thread without
+ * creating new stream indices. Subsequent ops referencing those
+ * streams from the worker thread eval correctly.
+ */
+int mlx_register_all_streams_on_current_thread(void);
+
 /**@}*/
 
 #ifdef __cplusplus

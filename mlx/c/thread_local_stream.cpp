@@ -2,6 +2,9 @@
 
 #include "mlx/c/thread_local_stream.h"
 
+// `mlx::core::gpu::new_stream` is declared in the GPU backend header;
+// public mlx aggregate headers don't pull this in.
+#include "mlx/backend/gpu/eval.h"
 #include "mlx/c/error.h"
 #include "mlx/c/private/mlx.h"
 #include "mlx/c/private/stream.h"
@@ -101,6 +104,26 @@ extern "C" int mlx_thread_local_stream_get_index(
 extern "C" int mlx_thread_local_stream_free(mlx_thread_local_stream tls) {
   try {
     mlx_thread_local_stream_free_(tls);
+    return 0;
+  } catch (std::exception& e) {
+    mlx_error(e.what());
+    return 1;
+  }
+}
+
+extern "C" int mlx_register_all_streams_on_current_thread(void) {
+  try {
+    auto streams = mlx::core::get_streams();
+    for (const auto& s : streams) {
+      if (s.device == mlx::core::Device::gpu) {
+        // gpu::new_stream uses encoders.try_emplace internally, so
+        // re-registering an existing stream on this thread is a no-op
+        // for streams already known and an emplace for streams that
+        // were created on a different thread (which is exactly what we
+        // want).
+        mlx::core::gpu::new_stream(s);
+      }
+    }
     return 0;
   } catch (std::exception& e) {
     mlx_error(e.what());
