@@ -35,15 +35,14 @@ else()
   FetchContent_Declare(
     mlx
     GIT_REPOSITORY "https://github.com/apepkuss/mlx.git"
-    # Pinned to the commit that fixes the SDPA mask batch/head-stride
-    # split for broadcast masks (`[B, 1, 1, kv]`) plus the 1-pass
-    # adapter buffer binding (18 vs 19) that made slot >= 1 read
-    # uninitialised `mask_batch_stride`. The post-fix kernel is
-    # required by downstream ironmlx (turbo + non-turbo batched
-    # decode). Bump this hash when rolling to a newer MLX version —
-    # never track the `dev` branch tip here, or fresh clones and CI
-    # will silently pick up untested upstream changes.
-    GIT_TAG b5c78c66b2493c925c040217dbeec91d1b487e06)
+    # Pinned to v0.31.2 + fork patches (SDPA mask batch/head-stride
+    # split, 1-pass adapter buffer binding). v0.31.2 introduces the
+    # thread-local CommandEncoder + per-thread `default_stream_storage`
+    # that ironmlx 0.31.2 migration depends on. Bump this hash when
+    # rolling to a newer MLX version — never track the `dev` branch
+    # tip here, or fresh clones and CI will silently pick up untested
+    # upstream changes.
+    GIT_TAG 25ddab4f8e7774640a089527cf06599e3c10afa5)
   FetchContent_MakeAvailable(mlx)
 endif()
 
